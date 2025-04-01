@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  webapp:
+    image: backend-webapp
+    ports:
+      - "5001:80"
+      - "5002:443"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: https://+:443;http://+:80
+      ASPNETCORE_Kestrel__Certificates__Default__Path: /https/aspnetapp.pfx
+      ASPNETCORE_Kestrel__Certificates__Default__Password: password
+      ConnectionStrings__DefaultConnection: Server=db;Database=CateringDatabase;User Id=sa;Password=Admin123!
+    depends_on:
+      - db
+    networks:
+      - app-network
+
+  db:
+    image: mcr.microsoft.com/azure-sql-edge:latest
+    container_name: mssql-container 
+    environment:
+      SA_PASSWORD: Admin123!
+      ACCEPT_EULA: Y
+    ports:
+      - "1433:1433"
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge
